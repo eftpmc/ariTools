@@ -1,6 +1,6 @@
 <template>
     <button class="home-button" @click="navigateToHome" @mouseover="handleMouseOver" @mouseleave="handleMouseLeave">
-      Home
+      H
     </button>
   </template>
   

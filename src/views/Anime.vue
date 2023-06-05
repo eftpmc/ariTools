@@ -1,19 +1,21 @@
 <template>
   <div class="anime-view">
     <HomeButton />
-    <div class="anime-grid-wrapper">
-      <div class="anime-grid" ref="animeGrid">
-        <div v-for="anime in animeList" :key="anime.id" class="anime-button">
-          <button class="button-image" @mouseover="showTitle(anime)" @mouseleave="hideTitle()">
-            <div class="button-image-wrapper">
-              <img :src="anime.image" alt="Anime Image" draggable="false" />
-            </div>
-          </button>
-        </div>
-      </div>
+    <div class="search-bar">
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Search anime..."
+        @focus="removeInputOutline"
+      />
+      <button class="search-button" @click="searchAnime">
+        S
+      </button>
     </div>
-    <div v-if="hoveredAnime" class="hover-text">
-      <p>{{ removeEpisodeNumber(hoveredAnime.title) }}</p>
+    <div v-if="searchResults.length > 0" class="search-results">
+      <div v-for="result in searchResults" :key="result.id" class="search-result">
+        <p class="search-result-text">{{ result.title }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -32,6 +34,9 @@ export default {
     return {
       animeList: [],
       hoveredAnime: null,
+      searchQuery: '',
+      searchResults: [],
+      loading: false,
     };
   },
   mounted() {
@@ -39,47 +44,7 @@ export default {
   },
   methods: {
     fetchAnimeData() {
-      const pagePromises = [];
-      for (let page = 1; page <= 10; page++) {
-        const promise = axios.get(`https://gotaku1.com/popular?page=${page}`);
-        pagePromises.push(promise);
-      }
-
-      Promise.all(pagePromises)
-        .then((responses) => {
-          const htmlPages = responses.map((response) => response.data);
-          this.parseAnimeData(htmlPages);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-
-    parseAnimeData(htmlPages) {
-      const animeList = [];
-      htmlPages.forEach((html) => {
-        const $ = cheerio.load(html);
-        const pageAnimeList = $('.video-block')
-          .map((_, element) => {
-            const image = $(element).find('img').attr('src');
-            const title = $(element).find('.name').text().trim();
-            const cleanedTitle = this.removeEpisodeNumber(title);
-            return {
-              id: _.toString(),
-              image: image || '',
-              title: cleanedTitle || 'No Title',
-            };
-          })
-          .get();
-        animeList.push(...pageAnimeList);
-      });
-
-      this.animeList = animeList;
-
-      this.$nextTick(() => {
-        const columns = animeList.length;
-        this.$refs.animeGrid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-      });
+      // Fetching anime data on component mount (if needed)
     },
 
     showTitle(anime) {
@@ -90,6 +55,70 @@ export default {
     },
     removeEpisodeNumber(title) {
       return title.replace(/episode[\s\d.]+$/i, '').trim();
+    },
+
+    searchAnime() {
+      if (this.searchQuery.trim() === '') {
+        this.searchResults = [];
+        return;
+      }
+
+      this.loading = true;
+
+      const searchUrl = `https://gotaku1.com/search.html?keyword=${encodeURIComponent(this.searchQuery)}`;
+      axios
+        .get(searchUrl)
+        .then((response) => {
+          const html = response.data;
+          const $ = cheerio.load(html);
+          const searchResults = $('.video-block')
+            .map((_, element) => {
+              const title = $(element).find('.name').text().trim();
+              const cleanedTitle = this.removeEpisodeNumber(title);
+              return {
+                id: _.toString(),
+                title: cleanedTitle || 'No Title',
+              };
+            })
+            .get();
+
+          const topThreeResults = this.getTopThreeResults(searchResults);
+          this.searchResults = topThreeResults;
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.searchResults = [];
+          this.loading = false;
+        });
+    },
+
+    getTopThreeResults(searchResults) {
+      const query = this.searchQuery.toLowerCase();
+      searchResults.sort((a, b) => {
+        const scoreA = this.calculateSimilarityScore(query, a.title.toLowerCase());
+        const scoreB = this.calculateSimilarityScore(query, b.title.toLowerCase());
+        return scoreB - scoreA; // Sort in descending order of similarity score
+      });
+      return searchResults.slice(0, 3); // Return the top three results
+    },
+
+    calculateSimilarityScore(query, title) {
+      let score = 0;
+      for (let i = 0; i < query.length; i++) {
+        if (title.includes(query[i])) {
+          score++;
+        }
+      }
+      return score;
+    },
+
+    removeInputOutline() {
+      // Remove outline when input is focused
+      const input = document.querySelector('.search-bar input');
+      if (input) {
+        input.style.outline = 'none';
+      }
     },
   },
 };
@@ -102,57 +131,69 @@ export default {
   overflow-x: auto;
 }
 
-.anime-grid-wrapper {
+.search-bar {
   display: flex;
-}
-
-.anime-grid {
-  display: inline-flex;
-  grid-gap: 10px;
-  justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-.anime-button {
-  position: relative;
-  display: inline-block;
-}
-
-.button-image {
-  width: 200px;
-  height: 300px; /* 2:3 aspect ratio */
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
+.search-bar input {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  width: 300px;
+  padding: 10px;
+  font-size: 16px;
   border: none;
-  border-radius: 5%;
-  transition: transform 0.3s ease-in-out;
+  border-radius: 5px;
+  margin-right: 10px;
 }
 
-.button-image-wrapper {
-  width: 100%;
-  height: 0;
-  padding-bottom: 150%; /* 2:3 aspect ratio */
-  position: relative;
+.search-bar input:focus {
+  outline: none;
 }
 
-.button-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
+.search-button {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  padding: 10px 15px;
 }
 
-.hover-text {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+.search-button:hover {
+  background-color: var(--secondary-color);
   color: var(--primary-color);
-  font-size: 24px;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.search-result {
+  background-color: var(--primary-color);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.search-result-text {
+  color: var(--secondary-color);
+  font-size: 16px;
+  margin: 0;
+  padding: 0 10px;
+  border-radius: 5px;
 }
 </style>

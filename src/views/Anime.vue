@@ -1,12 +1,15 @@
 <template>
   <div class="anime-view">
     <HomeButton />
-    <div class="anime-grid" ref="animeGrid" @mousedown="startDragging" @mousemove="drag" @mouseup="stopDragging">
-      <div v-for="anime in animeList" :key="anime.id" class="anime-button">
-        <button :class="{ 'dragging': isDragging }" class="button-image" @mouseover="showTitle(anime)"
-          @mouseleave="hideTitle">
-          <img :src="anime.image" alt="Anime Image" draggable="false" />
-        </button>
+    <div class="anime-grid-wrapper">
+      <div class="anime-grid" ref="animeGrid">
+        <div v-for="anime in animeList" :key="anime.id" class="anime-button">
+          <button class="button-image" @mouseover="showTitle(anime)" @mouseleave="hideTitle()">
+            <div class="button-image-wrapper">
+              <img :src="anime.image" alt="Anime Image" draggable="false" />
+            </div>
+          </button>
+        </div>
       </div>
     </div>
     <div v-if="hoveredAnime" class="hover-text">
@@ -29,10 +32,6 @@ export default {
     return {
       animeList: [],
       hoveredAnime: null,
-      isDragging: false,
-      startX: 0,
-      currentX: 0,
-      animeGridX: 0,
     };
   },
   mounted() {
@@ -78,7 +77,7 @@ export default {
       this.animeList = animeList;
 
       this.$nextTick(() => {
-        const columns = Math.ceil(animeList.length / 3);
+        const columns = animeList.length;
         this.$refs.animeGrid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
       });
     },
@@ -92,23 +91,6 @@ export default {
     removeEpisodeNumber(title) {
       return title.replace(/episode[\s\d.]+$/i, '').trim();
     },
-    startDragging(event) {
-      this.isDragging = true;
-      this.startX = event.clientX;
-    },
-    drag(event) {
-      if (this.isDragging) {
-        const moveX = event.clientX - this.startX;
-        this.currentX = this.animeGridX + moveX;
-        this.$refs.animeGrid.style.transform = `translateX(${this.currentX}px)`;
-      }
-    },
-    stopDragging() {
-      if (this.isDragging) {
-        this.animeGridX = this.currentX;
-        this.isDragging = false;
-      }
-    },
   },
 };
 </script>
@@ -117,17 +99,20 @@ export default {
 .anime-view {
   position: relative;
   text-align: center;
+  overflow-x: auto;
+}
+
+.anime-grid-wrapper {
+  display: flex;
 }
 
 .anime-grid {
-  display: grid;
+  display: inline-flex;
   grid-gap: 10px;
-  justify-items: center;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  white-space: nowrap;
-  cursor: grab;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .anime-button {
@@ -137,20 +122,29 @@ export default {
 
 .button-image {
   width: 200px;
-  height: 200px;
+  height: 300px; /* 2:3 aspect ratio */
   overflow: hidden;
   padding: 0;
   margin: 0;
   border: none;
   border-radius: 5%;
   transition: transform 0.3s ease-in-out;
-  /* Add transition for smooth scaling */
+}
+
+.button-image-wrapper {
+  width: 100%;
+  height: 0;
+  padding-bottom: 150%; /* 2:3 aspect ratio */
+  position: relative;
 }
 
 .button-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .hover-text {
@@ -160,9 +154,5 @@ export default {
   transform: translateX(-50%);
   color: var(--primary-color);
   font-size: 24px;
-}
-
-.dragging {
-  opacity: 1 !important;
 }
 </style>

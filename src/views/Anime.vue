@@ -2,15 +2,7 @@
   <div class="anime-view">
     <HomeButton />
     <div class="search-bar">
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="Search anime..."
-        @focus="removeInputOutline"
-      />
-      <button class="search-button" @click="searchAnime">
-        S
-      </button>
+      <input type="text" v-model="searchQuery" placeholder="Search anime..." @input="searchAnime" />
     </div>
     <div v-if="searchResults.length > 0" class="search-results">
       <div v-for="result in searchResults" :key="result.id" class="search-result">
@@ -32,11 +24,8 @@ export default {
   },
   data() {
     return {
-      animeList: [],
-      hoveredAnime: null,
       searchQuery: '',
       searchResults: [],
-      loading: false,
     };
   },
   mounted() {
@@ -47,25 +36,14 @@ export default {
       // Fetching anime data on component mount (if needed)
     },
 
-    showTitle(anime) {
-      this.hoveredAnime = anime;
-    },
-    hideTitle() {
-      this.hoveredAnime = null;
-    },
-    removeEpisodeNumber(title) {
-      return title.replace(/episode[\s\d.]+$/i, '').trim();
-    },
-
     searchAnime() {
-      if (this.searchQuery.trim() === '') {
+      const query = this.searchQuery.trim();
+      if (query === '') {
         this.searchResults = [];
         return;
       }
 
-      this.loading = true;
-
-      const searchUrl = `https://gotaku1.com/search.html?keyword=${encodeURIComponent(this.searchQuery)}`;
+      const searchUrl = `https://gotaku1.com/search.html?keyword=${encodeURIComponent(query)}`;
       axios
         .get(searchUrl)
         .then((response) => {
@@ -74,22 +52,18 @@ export default {
           const searchResults = $('.video-block')
             .map((_, element) => {
               const title = $(element).find('.name').text().trim();
-              const cleanedTitle = this.removeEpisodeNumber(title);
               return {
                 id: _.toString(),
-                title: cleanedTitle || 'No Title',
+                title: this.removeEpisodeNumber(title) || 'No Title',
               };
             })
             .get();
 
-          const topThreeResults = this.getTopThreeResults(searchResults);
-          this.searchResults = topThreeResults;
-          this.loading = false;
+          this.searchResults = this.getTopThreeResults(searchResults);
         })
         .catch((error) => {
           console.error(error);
           this.searchResults = [];
-          this.loading = false;
         });
     },
 
@@ -113,12 +87,8 @@ export default {
       return score;
     },
 
-    removeInputOutline() {
-      // Remove outline when input is focused
-      const input = document.querySelector('.search-bar input');
-      if (input) {
-        input.style.outline = 'none';
-      }
+    removeEpisodeNumber(title) {
+      return title.replace(/episode[\s\d.]+$/i, '').trim();
     },
   },
 };
@@ -135,7 +105,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin: 20px;
+}
+
+.search-bar input:focus {
+  outline: none;
 }
 
 .search-bar input {
@@ -146,39 +120,19 @@ export default {
   font-size: 16px;
   border: none;
   border-radius: 5px;
-  margin-right: 10px;
-}
-
-.search-bar input:focus {
-  outline: none;
-}
-
-.search-button {
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  padding: 10px 15px;
-}
-
-.search-button:hover {
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
+  margin: auto;
 }
 
 .search-results {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  margin: auto;
+  width: 300px;
 }
 
 .search-result {
   background-color: var(--primary-color);
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,6 +141,7 @@ export default {
   border-radius: 5px;
   width: 100%;
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .search-result-text {

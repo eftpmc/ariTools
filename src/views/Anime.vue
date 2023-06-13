@@ -2,19 +2,19 @@
   <div class="anime-view">
     <HomeButton />
     <div class="search-bar">
-      <input type="text" v-model="searchQuery" placeholder="Search anime..." @input="searchAnime" />
+      <input type="text" v-model="searchQuery" placeholder="Search anime..." />
+      <button @click="handleSearchInput">S</button>
     </div>
     <div v-if="searchResults.length > 0" class="search-results">
-      <div v-for="result in searchResults" :key="result.id" class="search-result">
+      <button v-for="result in searchResults" :key="result.id" class="search-result"
+        @click="fetchIframeSource(result.id)">
         <p class="search-result-text">{{ result.title }}</p>
-      </div>
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import cheerio from 'cheerio';
 import HomeButton from '@/components/HomeButton.vue';
 
 export default {
@@ -26,6 +26,7 @@ export default {
     return {
       searchQuery: '',
       searchResults: [],
+      searchRequestController: null,
     };
   },
   mounted() {
@@ -36,32 +37,38 @@ export default {
       // Fetching anime data on component mount (if needed)
     },
 
-    searchAnime() {
+    handleSearchInput() {
+      if (this.searchRequestController) {
+        // Abort the previous request if it exists
+        this.searchRequestController.abort();
+      }
+
+      this.searchRequestController = new AbortController();
+      const signal = this.searchRequestController.signal;
+
       const query = this.searchQuery.trim();
       if (query === '') {
         this.searchResults = [];
         return;
       }
 
-      const searchUrl = `https://gotaku1.com/search.html?keyword=${encodeURIComponent(query)}`;
-      axios
-        .get(searchUrl)
-        .then((response) => {
-          const html = response.data;
-          const $ = cheerio.load(html);
-          const searchResults = $('.video-block')
-            .map((_, element) => {
-              const title = $(element).find('.name').text().trim();
-              return {
-                id: _.toString(),
-                title: this.removeEpisodeNumber(title) || 'No Title',
-              };
-            })
-            .get();
+      const searchUrl = `https://arpi-api.herokuapp.com/api/anime/pahe/search/${encodeURIComponent(query)}`;
 
-          this.searchResults = this.getTopThreeResults(searchResults);
+      fetch(searchUrl, { signal })
+        .then((response) => response.json())
+        .then((data) => {
+          const topThreeResults = this.getTopThreeResults(data);
+          this.searchResults = topThreeResults.map((result) => ({
+            id: result.id,
+            title: result.title || 'No Title',
+            link: result.link || '',
+          }));
         })
         .catch((error) => {
+          if (error.name === 'AbortError') {
+            // Request was aborted, ignore the error
+            return;
+          }
           console.error(error);
           this.searchResults = [];
         });
@@ -85,6 +92,11 @@ export default {
         }
       }
       return score;
+    },
+
+    fetchIframeSource(id) {
+      // Placeholder function
+      console.log(`Fetching Iframe Source for id: ${id}`);
     },
 
     removeEpisodeNumber(title) {
@@ -123,6 +135,25 @@ export default {
   margin: auto;
 }
 
+.search-bar button {
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.search-bar button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
 .search-results {
   display: flex;
   flex-direction: column;
@@ -132,6 +163,7 @@ export default {
 }
 
 .search-result {
+  font-family: Arial, Helvetica, sans-serif;
   background-color: var(--primary-color);
   display: flex;
   align-items: center;
@@ -140,8 +172,19 @@ export default {
   margin-bottom: 10px;
   border-radius: 5px;
   width: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
   transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.search-result:hover {
+  transform: scale(1.1);
+  background-color: var(--secondary-color);
+}
+
+.search-result:hover .search-result-text {
+  color: var(--primary-color);
 }
 
 .search-result-text {

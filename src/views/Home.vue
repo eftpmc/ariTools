@@ -4,12 +4,23 @@
       <div class="logo">
         <span class="logo-text">ari</span>
       </div>
-      <button class="nav-toggle" @click="toggleNav">{{ navOpen ? 'Close' : 'Menu' }}</button>
+      <button class="nav-toggle" v-if="isMobile || navOpen" @click="toggleNav">{{ navOpen ? 'Close' : 'Menu' }}</button>
     </div>
     <div class="content">
-      <video class="background-video" autoplay loop muted>
-        <source src="/clips.mp4" type="video/mp4">
+      <video class="background-video" :class="{ 'video-loaded': isVideoLoaded }" autoplay loop muted @canplaythrough="handleVideoLoad">
+        <source :src="videoSrc" type="video/mp4">
       </video>
+      <div class="sticky-notes" v-if="!isMobile">
+        <button class="sticky-note note1" @click="navigateTo('/anime')">
+          <img src="/anime.png" alt="Sticky Note 1">
+        </button>
+        <button class="sticky-note note2" @click="navigateTo('/movies')">
+          <img src="/movie.png" alt="Sticky Note 2">
+        </button>
+        <button class="sticky-note note3" @click="navigateTo('/books')">
+          <img src="/book.png" alt="Sticky Note 3">
+        </button>
+      </div>
       <div class="overlay" v-if="navOpen" @click="toggleNav">
         <nav class="navigation">
           <ul>
@@ -24,19 +35,28 @@
 </template>
 
 <script>
-import Button from '@/components/Button.vue';
-
 export default {
   name: 'Home',
-  components: {
-    Button,
-  },
   data() {
     return {
       navOpen: false,
+      isMobile: false,
+      isVideoLoaded: false,
+      videoSrc: '',
+      videoSources: ['/1.mp4', '/2.mp4', '/3.mp4'],
     };
   },
+  mounted() {
+    this.checkMobile();
+    window.addEventListener('resize', this.checkMobile);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkMobile);
+  },
   methods: {
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 767;
+    },
     navigateTo(path) {
       this.$router.replace(path);
       this.navOpen = false; // Close the navigation after navigation
@@ -44,6 +64,14 @@ export default {
     toggleNav() {
       this.navOpen = !this.navOpen;
     },
+    handleVideoLoad() {
+      this.isVideoLoaded = true;
+    },
+  },
+  created() {
+    // Select a random video source
+    const randomIndex = Math.floor(Math.random() * this.videoSources.length);
+    this.videoSrc = this.videoSources[randomIndex];
   },
 };
 </script>
@@ -55,9 +83,64 @@ export default {
   align-items: center;
 }
 
+.sticky-notes {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  height: 100vh;
+  width: 100%;
+}
+
+.sticky-note {
+  max-width: 300px;
+  width: 30%;
+  height: auto;
+  margin: 10px;
+  position: absolute;
+  z-index: 2;
+  filter: brightness(.4);
+  transition: transform 0.3s, filter 0.3s;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.sticky-note img {
+  max-width: 100%;
+  height: auto;
+}
+
+.sticky-note:focus {
+  outline: none;
+}
+
+.sticky-note:hover {
+  filter: brightness(.7);
+}
+
+.note1 {
+  transform: rotate(-20deg) translateX(-50%) translateY(-50%);
+  top: calc(50% - 30vh);
+  left: 30%;
+}
+
+.note2 {
+  transform: rotate(15deg) translateX(-50%) translateY(-50%);
+  top: 20%;
+  left: 70%;
+}
+
+.note3 {
+  transform: rotate(-5deg) translateX(-50%) translateY(-50%);
+  top: 80%;
+  left: 40%;
+}
+
 .navbar {
   display: flex;
-  justify-content: center; /* Added */
+  justify-content: center;
   align-items: center;
   padding: 20px;
   position: fixed;
@@ -65,7 +148,6 @@ export default {
   background-color: rgba(0, 0, 0, 1);
   width: 100%;
 }
-
 
 .logo {
   display: flex;
@@ -82,7 +164,7 @@ export default {
   margin: 0;
   padding: 0;
   line-height: 1;
-  text-align: center; /* Added */
+  text-align: center;
 }
 
 .nav-toggle {
@@ -104,14 +186,20 @@ export default {
 }
 
 .background-video {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+}
+
+.background-video.video-loaded {
   opacity: 0.5;
-  z-index: -1;
+  visibility: visible;
 }
 
 .overlay {
@@ -120,6 +208,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
 .navigation {

@@ -7,7 +7,7 @@
       <button class="nav-toggle" v-if="isMobile || navOpen" @click="toggleNav">{{ navOpen ? 'Close' : 'Menu' }}</button>
     </div>
     <div class="content">
-      <video class="background-video" autoplay loop muted>
+      <video class="background-video" autoplay loop muted playsinline>
         <source src="/videos/1.mp4" type="video/mp4">
         <source src="/videos/1.webm" type="video/webm">
       </video>

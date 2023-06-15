@@ -7,11 +7,11 @@
       <button class="nav-toggle" v-if="isMobile || navOpen" @click="toggleNav">{{ navOpen ? 'Close' : 'Menu' }}</button>
     </div>
     <div class="content">
-      <video class="background-video" :class="{ 'video-loaded': isVideoLoaded }" autoplay loop muted @canplaythrough="handleVideoLoad">
-        <source :src="videoSource" type="video/mp4">
-        <source :src="videoSourceWebm" type="video/webm">
+      <video class="background-video" autoplay loop muted>
+        <source src="/videos/1.mp4" type="video/mp4">
+        <source src="/videos/1.webm" type="video/webm">
       </video>
-      <div class="sticky-notes" v-if="!isMobile && isVideoLoaded">
+      <div class="sticky-notes" v-if="!isMobile">
         <button class="sticky-note note1" @click="navigateTo('/anime')">
           <img src="/anime.png" alt="Sticky Note 1">
         </button>
@@ -42,25 +42,11 @@ export default {
     return {
       navOpen: false,
       isMobile: false,
-      isVideoLoaded: false,
-      videoSources: [
-        '/videos/1.mp4',
-        '/videos/2.mp4',
-        '/videos/3.mp4'
-      ],
-      videoSourcesWebm: [
-        '/videos/1.webm',
-        '/videos/2.webm',
-        '/videos/3.webm'
-      ],
-      videoSource: '',
-      videoSourceWebm: ''
     };
   },
   mounted() {
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile);
-    this.selectRandomVideo();
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.checkMobile);
@@ -75,14 +61,6 @@ export default {
     },
     toggleNav() {
       this.navOpen = !this.navOpen;
-    },
-    selectRandomVideo() {
-      const randomIndex = Math.floor(Math.random() * this.videoSources.length);
-      this.videoSource = this.videoSources[randomIndex];
-      this.videoSourceWebm = this.videoSourcesWebm[randomIndex];
-    },
-    handleVideoLoad() {
-      this.isVideoLoaded = true;
     }
   }
 };
@@ -161,14 +139,6 @@ export default {
   width: 100%;
 }
 
-.logo {
-  display: flex;
-  justify-content: center;
-  flex-grow: 1;
-  height: 100%;
-  margin: 0 auto;
-}
-
 .logo-text {
   font-size: 24px;
   font-weight: bold;
@@ -204,14 +174,6 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
-}
-
-.background-video.video-loaded {
-  opacity: 0.5;
-  visibility: visible;
 }
 
 .overlay {
@@ -251,6 +213,10 @@ export default {
     flex-direction: column;
     align-items: center;
     padding: 20px 0;
+  }
+
+  .sticky-notes {
+    display: none;
   }
 }
 </style>

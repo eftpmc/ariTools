@@ -11,7 +11,7 @@
         <source :src="videoSource" type="video/mp4">
         <source :src="videoSourceWebm" type="video/webm">
       </video>
-      <div class="sticky-notes" v-if="!isMobile">
+      <div class="sticky-notes" v-if="!isMobile && isVideoLoaded">
         <button class="sticky-note note1" @click="navigateTo('/anime')">
           <img src="/anime.png" alt="Sticky Note 1">
         </button>

@@ -129,11 +129,12 @@ export default {
 }
 
 .navbar {
+  position: sticky;
+  top: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
-  position: fixed;
   z-index: 1;
   background-color: rgba(0, 0, 0, 1);
   width: 100%;

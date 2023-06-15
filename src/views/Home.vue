@@ -112,19 +112,19 @@ export default {
 
 .note1 {
   transform: rotate(-20deg) translateX(-50%) translateY(-50%);
-  top: calc(50% - 30vh);
-  left: 30%;
+  top: 22%;
+  left: 25%;
 }
 
 .note2 {
   transform: rotate(15deg) translateX(-50%) translateY(-50%);
-  top: 20%;
+  top: 18%;
   left: 70%;
 }
 
 .note3 {
   transform: rotate(-5deg) translateX(-50%) translateY(-50%);
-  top: 80%;
+  top: 70%;
   left: 40%;
 }
 

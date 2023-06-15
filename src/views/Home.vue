@@ -139,6 +139,11 @@ export default {
   width: 100%;
 }
 
+.logo {
+  display: block; /* Updated to display block on all screen sizes */
+  text-align: center; /* Center the logo text */
+}
+
 .logo-text {
   font-size: 24px;
   font-weight: bold;

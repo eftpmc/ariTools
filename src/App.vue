@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <div class="navbar" :style="{ zIndex: navOpen ? '2' : '1' }">
+    <div class="navbar" :style="{ zIndex: navOpen ? '3' : '2' }">
       <div class="logo">
         <span class="logo-text">ari</span>
       </div>
@@ -17,7 +17,12 @@
     </div>
     <div class="content">
       <StickyNotes v-if="!isMobile" @navigateTo="navigateTo" />
-      <video class="background-video" :key="currentVideo" autoplay loop muted playsinline ref="videoRef">
+      <div class="transition-container" v-show="showTransition">
+        <video class="transition-video" autoplay loop muted playsinline preload>
+          <source src="/videos/transition.mp4" type="video/mp4">
+        </video>
+      </div>
+      <video class="background-video" :key="currentVideo" autoplay loop muted playsinline preload ref="videoRef">
         <source :src="currentVideo" type="video/mp4">
       </video>
       <router-view></router-view>
@@ -38,7 +43,7 @@ export default {
       navOpen: false,
       isMobile: false,
       currentVideo: '/videos/home.mp4',
-      targetVideo: ''
+      showTransition: false
     };
   },
   mounted() {
@@ -53,11 +58,11 @@ export default {
       this.isMobile = window.innerWidth <= 767;
     },
     navigateTo(path) {
-      this.targetVideo = `/videos/${path.slice(1)}.mp4`;
-      this.currentVideo = '/videos/transition.mp4';
+      this.currentVideo = `/videos/${path.slice(1)}.mp4`;
+      this.showTransition = true;
       setTimeout(() => {
-        this.currentVideo = this.targetVideo;
-      }, 1000);
+        this.showTransition = false;
+      }, 500);
       this.$router.replace(path);
       this.navOpen = false;
     },
@@ -93,8 +98,10 @@ export default {
 }
 
 .logo {
-  display: block; /* Updated to display block on all screen sizes */
-  text-align: center; /* Center the logo text */
+  display: block;
+  /* Updated to display block on all screen sizes */
+  text-align: center;
+  /* Center the logo text */
 }
 
 .logo-text {
@@ -116,7 +123,8 @@ export default {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 2; /* Adjusted z-index */
+  z-index: 3;
+  /* Adjusted z-index */
 }
 
 .overlay {
@@ -165,5 +173,22 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 0;
+}
+
+.transition-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.transition-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
 }
 </style>

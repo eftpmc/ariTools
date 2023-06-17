@@ -10,7 +10,8 @@
         <input class="search-input" type="text" placeholder="Search" v-model="searchQuery" @keydown.enter="search" />
       </div>
     </div>
-    <video class="background-video video-js" autoplay loop muted playsinline ref="videoRef">
+    <video id="video" class="background-video video-js" ref="videoRef">
+      <source src="/videos/anime.mp4">
     </video>
   </div>
 </template>
@@ -42,7 +43,6 @@ export default {
         const m3u8Url = data[0];
 
         // Process the M3U8 file URL as needed
-        console.log(m3u8Url);
 
         // Change the video source to the M3U8 file
         this.changeVideo(m3u8Url, { controls: true });
@@ -90,25 +90,30 @@ export default {
       }
     },
     changeVideo(src, options = {}) {
-      console.log(src);
       if (this.videoPlayer) {
-        if (src.includes('.m3u8')) {
-          console.log("here")
-          this.videoPlayer.src({ src: src, type: 'application/x-mpegURL' });
-        } else {
-          this.videoPlayer.src(src);
+        try {
+          if (src.includes('.m3u8')) {
+            this.videoPlayer.src({
+              src: src,
+              type: 'application/x-mpegURL'
+            });
+          } else {
+            this.videoPlayer.src(src);
+          }
+
+          Object.keys(options).forEach((key) => {
+            this.videoPlayer[key](options[key]);
+          });
+
+          this.videoPlayer.play();
+        } catch (error) {
+          console.error('Error changing video source:', error);
         }
-        Object.keys(options).forEach((key) => {
-          this.videoPlayer[key](options[key]);
-        });
-        this.videoPlayer.play();
       }
     },
+
     initializeVideoPlayer() {
-      this.videoPlayer = videojs(this.$refs.videoRef, {}, function () {
-        // Player initialized
-      });
-      this.changeVideo("/videos/anime.mp4")
+      this.videoPlayer = videojs("video");
     },
   },
   mounted() {

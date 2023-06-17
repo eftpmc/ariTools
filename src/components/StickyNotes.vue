@@ -29,9 +29,10 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 3;
+    z-index: 4;
     height: 100vh;
     width: 100%;
+    pointer-events: none;
 }
 
 .sticky-note {
@@ -46,6 +47,7 @@ export default {
     border: none;
     background: none;
     cursor: pointer;
+    pointer-events: auto;
 }
 
 .sticky-note img {

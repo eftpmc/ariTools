@@ -3,6 +3,8 @@ import Movies from './views/Movies.vue';
 import Books from './views/Books.vue';
 import Anime from './views/Anime.vue';
 import Home from './views/Home.vue';
+import NotFound from './views/NotFound.vue';
+import SearchResults from './views/SearchResults.vue';
 
 const routes = [
   {
@@ -20,6 +22,16 @@ const routes = [
   {
     path: '/anime',
     component: Anime,
+  },
+  {
+    path: '/search/:query',
+    name: 'SearchResults',
+    component: SearchResults,
+    props: true,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: NotFound,
   },
 ];
 

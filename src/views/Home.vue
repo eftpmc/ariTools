@@ -1,13 +1,8 @@
 <template>
-  <div class="home">
-    <div class="navbar">
-      <div class="logo">
-        <span class="logo-text">ari</span>
-      </div>
-    </div>
-    <video class="background-video" autoplay loop muted playsinline preload>
-        <source src="/videos/home.mp4" type="video/mp4">
-      </video>
+  <div class="portal-buttons">
+    <button class="portal-button" @click="navigateTo('/anime')">Anime</button>
+    <button class="portal-button" @click="navigateTo('/movies')">Movies</button>
+    <button class="portal-button" @click="navigateTo('/books')">Books</button>
   </div>
 </template>
 
@@ -23,45 +18,26 @@ export default {
 </script>
 
 <style scoped>
-.home {
+.portal-buttons {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.background-video {
-  position: relative;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-.navbar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background-color: rgba(0, 0, 0, 1);
-  width: 100%;
-  height: 40px;
-  z-index: 3;
-}
 
-.logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  position: relative;
-}
-
-.logo-text {
-  font-size: 24px;
+.portal-button {
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  font-size: 18px;
   font-weight: bold;
-  color: white;
-  margin: 0;
-  padding: 0;
-  text-align: center;
+  color: #fff;
+  background-color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.portal-button:hover {
+  background-color: #444;
 }
 </style>

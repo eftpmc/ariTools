@@ -2,7 +2,7 @@
   <div class="app">
     <div class="navbar">
       <div class="logo">
-        <span class="logo-text">ari</span>
+        <span class="logo-text" @click="navigateTo('/')">ari</span>
       </div>
     </div>
     <div class="content">
@@ -55,6 +55,7 @@ export default {
 }
 
 .logo-text {
+  cursor: pointer;
   font-size: 24px;
   font-weight: bold;
   color: #fff;

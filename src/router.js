@@ -24,7 +24,7 @@ const routes = [
     component: Anime,
   },
   {
-    path: '/search/:query',
+    path: '/search/:query/:episode',
     name: 'SearchResults',
     component: SearchResults,
     props: true,

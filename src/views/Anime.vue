@@ -10,15 +10,19 @@ export default {
   data() {
     return {
       searchQuery: '',
+      episode: 1, // Default episode is 1
     };
   },
   methods: {
     performSearch() {
       if (this.searchQuery.trim() !== '') {
-        // Navigate to a new view and pass the search query as a parameter
+        // Navigate to a new view and pass the search query and episode as parameters
         this.$router.push({
           name: 'SearchResults',
-          params: { query: this.searchQuery },
+          params: {
+            query: this.searchQuery,
+            episode: this.episode,
+          },
         });
       }
     },

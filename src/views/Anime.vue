@@ -18,7 +18,7 @@ export default {
       if (this.searchQuery.trim() !== '') {
         // Navigate to a new view and pass the search query and episode as parameters
         this.$router.push({
-          name: 'SearchResults',
+          name: 'AnimeSearchResults',
           params: {
             query: this.searchQuery,
             episode: this.episode,

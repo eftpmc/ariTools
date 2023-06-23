@@ -4,7 +4,8 @@ import Books from './views/Books.vue';
 import Anime from './views/Anime.vue';
 import Home from './views/Home.vue';
 import NotFound from './views/NotFound.vue';
-import SearchResults from './views/SearchResults.vue';
+import AnimeSearchResults from './views/AnimeSearchResults.vue';
+import MovieSearchResults from './views/MovieSearchResults.vue';
 
 const routes = [
   {
@@ -24,9 +25,15 @@ const routes = [
     component: Anime,
   },
   {
-    path: '/search/:query/:episode',
-    name: 'SearchResults',
-    component: SearchResults,
+    path: '/anime/search/:query/:episode',
+    name: 'AnimeSearchResults',
+    component: AnimeSearchResults,
+    props: true,
+  },
+  {
+    path: '/movies/search/:query',
+    name: 'MovieSearchResults',
+    component: MovieSearchResults,
     props: true,
   },
   {

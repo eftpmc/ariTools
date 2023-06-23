@@ -1,6 +1,6 @@
 <template>
-  <div class="video-container" v-if="episodeData">
-    <VideoPlayer :episodeData="episodeData" />
+  <div class="video-container" v-if="videoData">
+    <VideoPlayer :videoData="videoData" />
   </div>
   <div v-else class="loading-overlay">
     <div class="loading-text">this shit loading fr</div>>
@@ -11,7 +11,7 @@
 import VideoPlayer from '@/components/VideoPlayer.vue';
 
 export default {
-  name: 'SearchResults',
+  name: 'AnimeSearchResults',
   components: {
     VideoPlayer,
   },
@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return {
-      episodeData: null,
+      videoData: null,
     };
   },
   mounted() {
@@ -38,7 +38,7 @@ export default {
     async performSearch() {
       try {
         // Perform the search and retrieve the episode data
-        const response = await fetch(`https://arpi-api.herokuapp.com/api/anime/pahe/search/${this.query}`);
+        const response = await fetch(`https://arpi-api.herokuapp.com/api/anime/zoro/search/${this.query}`);
         const data = await response.json();
 
         // Process the search results and extract the episode data
@@ -53,12 +53,14 @@ export default {
     async fetchEpisodeData(episodeId) {
       try {
         // Fetch the episode data based on the episode ID and episode number
-        const response = await fetch(`https://arpi-api.herokuapp.com/api/anime/pahe/watch/${episodeId}/${this.episode}`);
+        const response = await fetch(`https://arpi-api.herokuapp.com/api/anime/zoro/watch/${episodeId}/${this.episode}`);
         const data = await response.json();
 
+        const videoUrl = data.subSource[0].file;
+
         // Set the episodeData to the retrieved data
-        this.episodeData = {
-          videoUrl: data[0],
+        this.videoData = {
+          videoUrl: videoUrl,
           // Add other necessary properties from the episode data
         };
       } catch (error) {

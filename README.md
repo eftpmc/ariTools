@@ -1,29 +1,7 @@
-# aritools
+very work in progress experiment, if you have any complaints or issues with what im doing here, feel free to create an issue and get in contact with me
+no harm is meant to be done this is purely for educational purposes for myself
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+known issues:
+no spaces in movie search
+no check on flixhq to see if movie or tv show causing error if the search results in a tv show
+if no sub or dub file then api error

@@ -25,7 +25,7 @@ export default {
       console.log(videoUrl)
 
       // Use the CORS proxy URL to make the request
-      const proxyUrl = `http://localhost:3000/?url=${encodeURIComponent(videoUrl)}`;
+      const proxyUrl = `https://arpi-api.herokuapp.com/video-proxy?url=${encodeURIComponent(videoUrl)}`;
 
       this.videoPlayer = videojs(videoElement);
       this.videoPlayer.src({

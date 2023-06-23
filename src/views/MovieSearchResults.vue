@@ -3,7 +3,7 @@
       <VideoPlayer :videoData="videoData" />
     </div>
     <div v-else class="loading-overlay">
-      <div class="loading-text">Loading...</div>
+      <div class="loading-text">this shit loading fr</div>
     </div>
   </template>
     

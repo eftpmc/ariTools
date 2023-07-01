@@ -38,7 +38,7 @@ export default {
     async performSearch() {
       try {
         // Perform the search and retrieve the episode data
-        const response = await fetch(`https://arpi-api.herokuapp.com/api/anime/zoro/search/${this.query}`);
+        const response = await fetch(`https://arpi-api.herokuapp.com/v1/anime/zoro/search/${this.query}`);
         const data = await response.json();
 
         // Process the search results and extract the episode data
@@ -53,7 +53,7 @@ export default {
     async fetchEpisodeData(episodeId) {
       try {
         // Fetch the episode data based on the episode ID and episode number
-        const response = await fetch(`https://arpi-api.herokuapp.com/api/anime/zoro/watch/${episodeId}/${this.episode}`);
+        const response = await fetch(`https://arpi-api.herokuapp.com/v1/anime/zoro/watch/${episodeId}/${this.episode}`);
         const data = await response.json();
 
         const videoUrl = data.subSource[0].file;

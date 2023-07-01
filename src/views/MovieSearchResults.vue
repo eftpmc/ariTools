@@ -34,7 +34,7 @@
       async performSearch() {
         try {
          console.log(this.query);
-          const response = await fetch(`https://arpi-api.herokuapp.com/api/movie/flixhq/search/movie/${this.query}`);
+          const response = await fetch(`https://arpi-api.herokuapp.com/v1/movie/flixhq/search/${this.query}`);
           const data = await response.json();
 
           if (data.length > 0) {
@@ -47,7 +47,7 @@
       },
       async fetchMovieData(movieId) {
         try {
-          const response = await fetch(`https://arpi-api.herokuapp.com/api/movie/flixhq/watch/${movieId}`);
+          const response = await fetch(`https://arpi-api.herokuapp.com/v1/movie/flixhq/watch/${movieId}`);
           const data = await response.json();
   
           // Retrieve the 720p video URL from the sources data

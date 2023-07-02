@@ -4,19 +4,47 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "aritools",
   description: "media website",
+  head: [
+		['link', { href: '/purple.png', rel: 'icon', type: 'image/png' }],
+		['link', { href: '/purple.png', rel: 'apple-touch-icon', sizes: '128x128' }],
+	],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Documentation', link: '/api-examples' }
+      { text: 'Documentation', link: '/movies/search' }
     ],
 
     sidebar: [
       {
-        text: 'Examples',
+        text: 'Introduction',
+        link: '/introduction'
+      },
+      {
+        text: 'Providers',
+        link: '/providers'
+      },
+      {
+        text: 'FAQ',
+        link: '/faq'
+      },
+      {
+        text: 'API',
         items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
+          {
+            text: 'Movies',
+            items: [
+              { text: 'Search', link: '/movies/search' },
+              { text: 'Get Movie Source', link: '/movies/getmoviesource' }
+            ]
+          },
+          {
+            text: 'Anime',
+            items: [
+              { text: 'Search', link: '/anime/search' },
+              { text: 'Get Episode Source', link: '/anime/getepisodesource' }
+            ]
+          }
         ]
       }
     ],

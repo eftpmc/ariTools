@@ -9,10 +9,10 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /introduction/
+      link: /introduction
     - theme: alt
       text: View API
-      link: /api-examples
+      link: /movies/search
 
 features:
   - icon: 🎞️

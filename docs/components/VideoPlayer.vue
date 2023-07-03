@@ -25,7 +25,7 @@ export default {
       console.log(videoUrl)
 
       // Use the CORS proxy URL to make the request
-      const proxyUrl = `https://arpi-api.herokuapp.com/video-proxy?url=${encodeURIComponent(videoUrl)}`;
+      const proxyUrl = `https://m3u8-proxy-nine.vercel.app/m3u8-proxy?url=${encodeURIComponent(videoUrl)}&headers={"referer":"https://9zoro.to"}`;
 
       this.videoPlayer = videojs(videoElement);
       this.videoPlayer.src({

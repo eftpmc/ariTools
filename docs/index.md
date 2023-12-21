@@ -18,7 +18,7 @@ features:
   - icon: 🎞️
     title: Movies
     details: 'Explore a vast collection of movies across different genres and languages.'
-    link: /movies/movies.md
+    link: /movie
     linkText: Browse Movies
   - icon: 📘
     title: Books
